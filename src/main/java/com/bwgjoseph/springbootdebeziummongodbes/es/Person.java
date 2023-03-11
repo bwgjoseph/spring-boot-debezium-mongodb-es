@@ -10,9 +10,11 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @Builder
+@ToString
 @TypeAlias(value = "person")
 @Document(indexName = "persons")
 public class Person {

@@ -37,6 +37,20 @@ services:
     networks:
       - sbd_internal
 
+  kibana:
+    image: kibana:7.17.9
+    container_name: sbd-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      ELASTICSEARCH_PASSWORD: password
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+    networks:
+      - sbd_internal
+
 networks:
   sbd_internal:
     driver: 'bridge'
