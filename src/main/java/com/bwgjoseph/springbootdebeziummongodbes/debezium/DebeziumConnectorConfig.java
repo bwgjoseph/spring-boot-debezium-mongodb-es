@@ -1,4 +1,4 @@
-package com.bwgjoseph.springbootdebeziummongodbes;
+package com.bwgjoseph.springbootdebeziummongodbes.debezium;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class DebeziumConnectorConfig {
                 // .with("collection.include.list", "") // has default
                 // .with("collection.exclude.list", "") // has default
                 // .with("snapshot.mode", "initial") // has default
-                // .with("capture.mode", "change_streams_update_full") // has default
+                .with("capture.mode", "change_streams_update_full_with_pre_image") // has default
                 // .with("snapshot.include.collection.list", "") // default collection.include.list
                 // .with("field.exclude.list", "") // has default
                 // .with("field.renames", "") // has default

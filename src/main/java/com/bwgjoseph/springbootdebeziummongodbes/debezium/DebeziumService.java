@@ -1,4 +1,4 @@
-package com.bwgjoseph.springbootdebeziummongodbes;
+package com.bwgjoseph.springbootdebeziummongodbes.debezium;
 
 import java.io.IOException;
 import java.util.concurrent.Executor;
@@ -34,6 +34,23 @@ public class DebeziumService {
 
     private void handleChangeEvent(RecordChangeEvent<SourceRecord> sourceRecordRecordChangeEvent) {
         SourceRecord sourceRecord = sourceRecordRecordChangeEvent.record();
+        // log.info("sourceRecord {}", sourceRecord);
+        // log.info("sourceRecord valueSchema {}", sourceRecord.valueSchema());
+        // Struct sourceRecordChangeValue= (Struct) sourceRecord.value();
+        // log.info("sourceRecordChangeValue {}", sourceRecordChangeValue);
+
+        // if (sourceRecordChangeValue != null) {
+        //     Operation operation = Operation.forCode((String) sourceRecordChangeValue.get(OPERATION));
+
+        //     log.info("operation {}", operation);
+
+        //     if(operation != Operation.READ) {
+        //         String record = operation == Operation.DELETE ? BEFORE : AFTER;
+        //         Struct struct = (Struct) sourceRecordChangeValue.get(record);
+
+        //         log.info("struct {}", struct);
+        //     }
+        // }
 
         log.info("Key = '" + sourceRecord.key() + "' value = '" + sourceRecord.value() + "'");
     }
