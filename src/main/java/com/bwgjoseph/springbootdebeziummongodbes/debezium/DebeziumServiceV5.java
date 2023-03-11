@@ -68,19 +68,23 @@ public class DebeziumServiceV5 {
             // we ignore READ operation
             if (!structWrapper.getOperation().equals(Operation.READ)) {
                 if (structWrapper.getOperation().equals(Operation.DELETE)) {
+                    log.info("Attempting to delete index with id {}", structWrapper.getId());
                     // delete from index
                     this.elasticsearchOperations.delete(structWrapper.getId(), IndexCoordinates.of("persons"));
                 } else { // create or update
                     Person person = structWrapper.getRecord(Person.class);
-                    log.info("record {}", person);
+                    log.info("mongo record {}", person);
 
+                    log.info("Attempting to convert to es clazz");
                     // we might want to transform, enrich, map to ES Person.class
                     com.bwgjoseph.springbootdebeziummongodbes.es.Person esPerson = this.conversionService.convert(person, com.bwgjoseph.springbootdebeziummongodbes.es.Person.class);
                     log.info("es person {}", esPerson);
 
                     // then index it into the store
+                    log.info("Attempting to index into es");
                     IndexQuery indexQuery = new IndexQueryBuilder().withObject(esPerson).build();
-                    this.elasticsearchOperations.index(indexQuery, IndexCoordinates.of("persons"));
+                    String id = this.elasticsearchOperations.index(indexQuery, IndexCoordinates.of("persons"));
+                    log.info("index-ed completed with id {}", id);
                 }
             }
         }

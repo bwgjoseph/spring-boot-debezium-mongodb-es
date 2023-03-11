@@ -8,11 +8,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.debezium.data.Envelope.Operation;
 import io.debezium.engine.RecordChangeEvent;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Hide the complexity of getting the required fields from {@link Struct} object
  *
  */
+@Slf4j
 public final class StructWrapper {
     private final Struct key;
     private final Struct envelop;
@@ -70,6 +72,8 @@ public final class StructWrapper {
         }
 
         String toDeser = this.envelop.get(this.getBeforeOrAfter()).toString();
+
+        log.info("Attempting to convert to mongo clazz {}", clazz);
 
         return this.conversionService.convert(toDeser, clazz);
     }
