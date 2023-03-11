@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/persons/search")
-public class PersonController {
+public class PersonSearchController {
     private final ElasticsearchOperations elasticsearchOperations;
 
     @PostMapping

@@ -5,11 +5,10 @@ import java.util.List;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
-@Component
+// @Component
 @RequiredArgsConstructor
 public class PersonStartup implements ApplicationListener<ApplicationReadyEvent> {
 

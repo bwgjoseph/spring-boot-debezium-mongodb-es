@@ -1,3 +1,7 @@
-# spring:
-#   main:
-#     web-application-type: none
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://bwgjoseph:{MONGO_PASSWORD}@sb-debezium.1ewsyzd.mongodb.net/source
+
+mongo:
+  version: v5
