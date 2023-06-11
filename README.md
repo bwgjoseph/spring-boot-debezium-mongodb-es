@@ -277,3 +277,29 @@ Tried
 objectMapper.addMixIn(Person.PersonBuilder.class, PersonMixin.class);
 objectMapper.addMixIn(Person.class, PersonMixin.class);
 ```
+
+---
+
+Unable to deserialize when using `LocalDateTime`
+
+```log
+2023-06-11 14:00:52.776  INFO 5364 --- [ool-78-thread-1] c.b.s.debezium.StructWrapper             : Attempting to convert to mongo clazz class com.bwgjoseph.springbootdebeziummongodbes.mongo.Person
+com.fasterxml.jackson.databind.exc.MismatchedInputException: Cannot deserialize value of type `java.time.LocalDateTime` from Object value (token `JsonToken.START_OBJECT`)
+ at [Source: (String)"{"_id": {"$oid": "648563141b59841304250815"},"name": "joseph","description": "hello world","hashTags": ["hello","world"],"createdAt": {"$date": 1686463252556},"updatedAt": {"$date": 1686463252556},"_class": "person"}"; line: 1, column: 135] (through reference chain: com.bwgjoseph.springbootdebeziummongodbes.mongo.Person$PersonBuilderImpl["createdAt"])
+        at com.fasterxml.jackson.databind.exc.MismatchedInputException.from(MismatchedInputException.java:59)
+        at com.fasterxml.jackson.databind.DeserializationContext.reportInputMismatch(DeserializationContext.java:1741)
+```
+
+To do that we create `LocalDateTimeDeserializer` to handle it like how we did for `ObjectIdDerserializer`
+
+If we look at
+
+```json
+{
+    "createdAt": {
+        "$date": 1686463252556 // this is epoch time
+    }
+}
+```
+
+MongoDB stores in epoch time, and hence, we need to convert to `LocalDateTime`

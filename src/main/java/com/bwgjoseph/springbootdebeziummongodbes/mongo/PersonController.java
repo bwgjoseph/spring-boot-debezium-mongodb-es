@@ -1,5 +1,7 @@
 package com.bwgjoseph.springbootdebeziummongodbes.mongo;
 
+import java.time.LocalDateTime;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,10 +20,14 @@ public class PersonController {
 
     @PostMapping
     public Person create(@RequestBody PersonRequest personRequest) {
+        LocalDateTime now = LocalDateTime.now();
+
         Person person = Person.builder()
                     .name(personRequest.name())
                     .description(personRequest.description())
                     .hashTags(personRequest.hashTags())
+                    .createdAt(now)
+                    .updatedAt(now)
                     .build();
 
         return this.personRepository.save(person);
@@ -35,6 +41,7 @@ public class PersonController {
                             .name(personRequest.name())
                             .description(personRequest.description())
                             .hashTags(personRequest.hashTags())
+                            .updatedAt(LocalDateTime.now())
                             .build();
 
         return this.personRepository.save(updatedPerson);

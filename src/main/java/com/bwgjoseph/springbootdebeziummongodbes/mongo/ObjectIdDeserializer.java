@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * When receiving data from debezium event, it looks like {id={"$oid": "640cbed1fd48b975449d0133"} (ObjectId)
- * so we need to read from `id.$oid` to cast into String which is the type for `Person.id`
+ * so we need to read from `id.$oid` to cast into String which is the type for `BaseRecord.id`
  */
 public class ObjectIdDeserializer extends JsonDeserializer<String> {
 
