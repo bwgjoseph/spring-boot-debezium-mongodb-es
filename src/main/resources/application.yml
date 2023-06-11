@@ -3,5 +3,9 @@ spring:
     mongodb:
       uri: mongodb://root:password@localhost:27017/source?directConnection=true&authSource=admin
 
+dbz:
+  offset:
+    file: ${user.home}/dbz_offsets.dat
+
 mongo:
   version: v5
