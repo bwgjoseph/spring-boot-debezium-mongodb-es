@@ -1,5 +1,6 @@
 package com.bwgjoseph.springbootdebeziummongodbes.mongo;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
@@ -16,4 +17,5 @@ public class BaseRecord {
     private String id;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Instant occurredAt;
 }

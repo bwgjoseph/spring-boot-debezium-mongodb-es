@@ -280,7 +280,7 @@ objectMapper.addMixIn(Person.class, PersonMixin.class);
 
 ---
 
-Unable to deserialize when using `LocalDateTime`
+Unable to deserialize when using `LocalDateTime` and `Instant`
 
 ```log
 2023-06-11 14:00:52.776  INFO 5364 --- [ool-78-thread-1] c.b.s.debezium.StructWrapper             : Attempting to convert to mongo clazz class com.bwgjoseph.springbootdebeziummongodbes.mongo.Person
@@ -303,3 +303,56 @@ If we look at
 ```
 
 MongoDB stores in epoch time, and hence, we need to convert to `LocalDateTime`
+
+This is the same as `Instant`
+
+But do note a small difference
+
+In Mongo, it is stored as
+
+```json
+{
+  "_id": {
+    "$oid": "648568d11b59841304250875"
+  },
+  "name": "joseph",
+  "description": "hello world",
+  "hashTags": [
+    "hello",
+    "world"
+  ],
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1686464721711"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1686464721711"
+    }
+  },
+  "occurredAt": {
+    "$date": {
+      "$numberLong": "1686464721712"
+    }
+  },
+  "_class": "person"
+}
+```
+
+```
+createdAt
+2023-06-11T06:25:21.711+00:00
+updatedAt
+2023-06-11T06:25:21.711+00:00
+occurredAt
+2023-06-11T06:25:21.712+00:00
+```
+
+However, after converted to its respective class
+
+```java
+Person(super=BaseRecord(id=648568d11b59841304250875, createdAt=2023-06-11T14:25:21.711, updatedAt=2023-06-11T14:25:21.711, occurredAt=2023-06-11T06:25:21.712Z), name=joseph, description=hello world, hashTags=[hello, world])
+```
+
+Notice that for `LocalDateTime`, it will automatically be shown as current (localdatetime) - `2023-06-11T14:25:21.711` but for `Instant`, it is defined as `UTC+0` using `2023-06-11T06:25:21.712Z` < notice the Z, and it's 06 instead of 14 >

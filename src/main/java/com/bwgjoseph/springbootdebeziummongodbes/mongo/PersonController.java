@@ -1,5 +1,6 @@
 package com.bwgjoseph.springbootdebeziummongodbes.mongo;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +29,7 @@ public class PersonController {
                     .hashTags(personRequest.hashTags())
                     .createdAt(now)
                     .updatedAt(now)
+                    .occurredAt(Instant.now())
                     .build();
 
         return this.personRepository.save(person);

@@ -1,5 +1,6 @@
 package com.bwgjoseph.springbootdebeziummongodbes.mongo;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -13,4 +14,6 @@ public abstract class BaseRecordMixin {
     private LocalDateTime createdAt;
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime updatedAt;
+    @JsonDeserialize(using = InstantDeserializer.class)
+    private Instant occurredAt;
 }
