@@ -1,8 +1,9 @@
 package com.bwgjoseph.springbootdebeziummongodbes.debezium;
 
 import java.io.IOException;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -30,14 +31,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @ConditionalOnProperty(prefix = "mongo", name = "version", havingValue = "v5")
-public class DebeziumServiceV5 {
+public class DebeziumSourceEventListenerV5 {
 
-    private final Executor executor;
+    private final ExecutorService executor;
     private final DebeziumEngine<RecordChangeEvent<SourceRecord>> debeziumEngine;
     private final ConversionService conversionService;
     private final ElasticsearchOperations elasticsearchOperations;
 
-    public DebeziumServiceV5(Executor executor, Configuration mongodbConnector, ConversionService conversionService, ElasticsearchOperations elasticsearchOperations) {
+    public DebeziumSourceEventListenerV5(Configuration mongodbConnector, ConversionService conversionService, ElasticsearchOperations elasticsearchOperations) {
         log.info("Starting DebeziumServiceV5");
 
         this.executor = Executors.newSingleThreadExecutor();
@@ -50,10 +51,11 @@ public class DebeziumServiceV5 {
     }
 
     // see schema image on what are available
+    // note that the schema seem different from if publish from kafka
     private void handleChangeEvent(RecordChangeEvent<SourceRecord> sourceRecordRecordChangeEvent) {
         SourceRecord sourceRecord = sourceRecordRecordChangeEvent.record();
-        Struct sourceRecordValue = (Struct) sourceRecord.value();
         Struct sourceRecordKey = (Struct) sourceRecord.key();
+        Struct sourceRecordValue = (Struct) sourceRecord.value();
 
         // on delete event, it seem that there is a second event (after delete) where the value is null
         // SourceRecord@224 "SourceRecord{sourcePartition={rs=atlas-b15fi5-shard-0, server_id=sbd-mongodb-connector}, sourceOffset={sec=1678550857, ord=1, transaction_id=null, resume_token=82640CA749000000012B022C0100296E5A1004CCDB188FE00C4DF2852FF333EE031E5646645F69640064640CA4A2F2146B0CFD4191390004}} ConnectRecord{topic='sbd-mongodb-connector.source.persons', kafkaPartition=null, key=Struct{id={"$oid": "640ca4a2f2146b0cfd419139"}}, keySchema=Schema{sbd-mongodb-connector.source.persons.Key:STRUCT}, value=null, valueSchema=null, timestamp=null, headers=ConnectHeaders(headers=)}"
@@ -101,6 +103,22 @@ public class DebeziumServiceV5 {
     private void stop() throws IOException {
         if (this.debeziumEngine != null) {
             this.debeziumEngine.close();
+
+            // the submitted task keeps running, only no more new ones can be added
+            this.executor.shutdown();
+
+            awaitTermination(executor);
+        }
+    }
+
+    private void awaitTermination(ExecutorService executor) {
+        try {
+            while (!executor.awaitTermination(10, TimeUnit.SECONDS)) {
+                log.info("Waiting another 10 seconds for the embedded engine to complete");
+            }
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 }
