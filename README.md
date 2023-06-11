@@ -16,11 +16,6 @@ This project is used to learn on how to setup (embedded) Debezium with Spring Bo
 
 ---
 
-## Account
-
-Altas:
-    - bwgjoseph / d8v2dYsu85i0QSRU / mongodb+srv://bwgjoseph:<password>@sb-debezium.1ewsyzd.mongodb.net/source
-
 ## Known Issue
 
 `debezium-connector-mongodb-2.1.2.Final` brings in `mongo-driver-sync` which brings in `mongo-driver-core:4.6.1`, it does not have `FullDocumentBeforeChange` which causes exception when using with `capture.mode:change_streams_update_full_with_pre_image` debezium config
@@ -35,14 +30,24 @@ Caused by: java.lang.ClassNotFoundException: com.mongodb.client.model.changestre
         ... 14 common frames omitted
 ```
 
+The above is my mistake, it is spring-boot that brings in the older driver, I just need to override in `pom.xml`
+
+```xml
+<properties>
+		<!--
+			Spring 2.7.12 brings in mongo 4.6.1 but debezium relies on 4.7.1
+			Manually define to prevent debezium from using 4.6.1
+			See https://issues.redhat.com/browse/DBZ-6181
+		-->
+		<mongodb.version>4.7.1</mongodb.version>
+	</properties>
+```
+
 ---
 
 Not able to view before and after document when using with `change_streams_update_full_with_pre_image`. Possibly be due to using `MongoDB 5.x`. See [change-streams-mongodb-6-0-support-pre-post-image](https://www.mongodb.com/blog/post/change-streams-mongodb-6-0-support-pre-post-image-retrieval-ddl-operations) and [introducing-mongodb-connector-apache-kafka-version-1-9](https://www.mongodb.com/blog/post/introducing-mongodb-connector-apache-kafka-version-1-9)
 
-
-
 Starting FileOffsetBackingStore with file C:\Users\Joseph\AppData\Local\Temp\offsets_5858600127625159299.dat
-
 
 ---
 
