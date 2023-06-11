@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +34,7 @@ public class PersonController {
                     .description(personRequest.description())
                     .hashTags(personRequest.hashTags())
                     .dob(PartialLocalDate.now())
+                    .location(new GeoJsonPoint(100.3, 1.34))
                     .sources(List.of(internalSource, externalSource))
                     .createdAt(now)
                     .updatedAt(now)

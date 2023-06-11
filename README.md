@@ -516,3 +516,82 @@ And viola! it does!
 2023-06-11 17:14:15.084  INFO 8876 --- [pool-2-thread-1] c.b.s.debezium.StructWrapper             : Attempting to convert to mongo clazz class com.bwgjoseph.springbootdebeziummongodbes.mongo.Person
 2023-06-11 17:14:15.118  INFO 8876 --- [pool-2-thread-1] c.b.s.d.DebeziumSourceEventListenerV5    : mongo record Person(super=BaseRecord(id=6485906645842b7e0b8899b2, createdAt=2023-06-11T17:14:14.081, updatedAt=2023-06-11T17:14:14.081, occurredAt=2023-06-11T09:14:14.087Z, sources=[InternalSource(super=Source(sourceType=INTERNAL, obtainedAt=2023-06-11T17:14:14.081, remarks=internal remarks), internal=internal), ExternalSource(super=Source(sourceType=EXTERNAL, obtainedAt=2023-06-11T17:14:14.081, remarks=external remarks), external=external)]), name=joseph, description=hello world, hashTags=[hello, world], dob=2023-06-11)
 ```
+
+---
+
+What happens if it's 3rd party object like `GeoJsonPoint`? Well, interesting, there's nothing that we need to do
+
+```json
+{
+  "_id": {
+    "$oid": "648591a89d365116db685179"
+  },
+  "name": "joseph",
+  "description": "hello world",
+  "hashTags": [
+    "hello",
+    "world"
+  ],
+  "dob": {
+    "date": "2023-06-11",
+    "classifier": "LOCAL_DATE",
+    "year": 2023,
+    "month": 6,
+    "day": 11
+  },
+  "location": {
+    "type": "Point",
+    "coordinates": [
+      100.3,
+      1.34
+    ]
+  },
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1686475176329"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1686475176329"
+    }
+  },
+  "occurredAt": {
+    "$date": {
+      "$numberLong": "1686475176334"
+    }
+  },
+  "sources": [
+    {
+      "internal": "internal",
+      "sourceType": "INTERNAL",
+      "obtainedAt": {
+        "$date": {
+          "$numberLong": "1686475176329"
+        }
+      },
+      "remarks": "internal remarks",
+      "_class": "source.internal"
+    },
+    {
+      "external": "external",
+      "sourceType": "EXTERNAL",
+      "obtainedAt": {
+        "$date": {
+          "$numberLong": "1686475176329"
+        }
+      },
+      "remarks": "external remarks",
+      "_class": "source.external"
+    }
+  ],
+  "_class": "person"
+}
+```
+
+It works out of the box
+
+```log
+2023-06-11 17:19:36.904  INFO 21904 --- [pool-2-thread-1] c.b.s.debezium.StructWrapper             : Attempting to convert to mongo clazz class com.bwgjoseph.springbootdebeziummongodbes.mongo.Person
+2023-06-11 17:19:37.048  INFO 21904 --- [pool-2-thread-1] c.b.s.d.DebeziumSourceEventListenerV5    : mongo record Person(super=BaseRecord(id=648591a89d365116db685179, createdAt=2023-06-11T17:19:36.329, updatedAt=2023-06-11T17:19:36.329, occurredAt=2023-06-11T09:19:36.334Z, sources=[InternalSource(super=Source(sourceType=INTERNAL, obtainedAt=2023-06-11T17:19:36.329, remarks=internal remarks), internal=internal), ExternalSource(super=Source(sourceType=EXTERNAL, obtainedAt=2023-06-11T17:19:36.329, remarks=external remarks), external=external)]), name=joseph, description=hello world, hashTags=[hello, world], dob=2023-06-11, location=Point [x=100.300000, y=1.340000])
+```
