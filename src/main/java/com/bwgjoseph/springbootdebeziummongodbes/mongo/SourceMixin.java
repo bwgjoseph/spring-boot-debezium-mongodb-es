@@ -9,4 +9,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @Type(value = InternalSource.class, name = "INTERNAL"),
     @Type(value = ExternalSource.class, name = "EXTERNAL"),
 })
-public abstract class SourceMixin {}
+public interface SourceMixin {}
