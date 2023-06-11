@@ -1,4 +1,4 @@
-package com.bwgjoseph.springbootdebeziummongodbes.mongo;
+package com.bwgjoseph.springbootdebeziummongodbes.jackson;
 
 import java.io.IOException;
 

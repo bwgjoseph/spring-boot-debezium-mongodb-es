@@ -1,4 +1,4 @@
-package com.bwgjoseph.springbootdebeziummongodbes.mongo;
+package com.bwgjoseph.springbootdebeziummongodbes.jackson;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

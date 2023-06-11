@@ -6,13 +6,13 @@ import java.time.LocalDateTime;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
+import com.bwgjoseph.springbootdebeziummongodbes.jackson.BaseRecordMixin;
+import com.bwgjoseph.springbootdebeziummongodbes.jackson.InstantDeserializer;
+import com.bwgjoseph.springbootdebeziummongodbes.jackson.LocalDateTimeDeserializer;
+import com.bwgjoseph.springbootdebeziummongodbes.jackson.SourceMixin;
 import com.bwgjoseph.springbootdebeziummongodbes.mongo.BaseRecord;
-import com.bwgjoseph.springbootdebeziummongodbes.mongo.BaseRecordMixin;
-import com.bwgjoseph.springbootdebeziummongodbes.mongo.InstantDeserializer;
-import com.bwgjoseph.springbootdebeziummongodbes.mongo.LocalDateTimeDeserializer;
 import com.bwgjoseph.springbootdebeziummongodbes.mongo.Person;
 import com.bwgjoseph.springbootdebeziummongodbes.mongo.Source;
-import com.bwgjoseph.springbootdebeziummongodbes.mongo.SourceMixin;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;

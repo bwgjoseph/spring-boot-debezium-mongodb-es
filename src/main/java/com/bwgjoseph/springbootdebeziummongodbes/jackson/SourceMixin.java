@@ -1,5 +1,7 @@
-package com.bwgjoseph.springbootdebeziummongodbes.mongo;
+package com.bwgjoseph.springbootdebeziummongodbes.jackson;
 
+import com.bwgjoseph.springbootdebeziummongodbes.mongo.ExternalSource;
+import com.bwgjoseph.springbootdebeziummongodbes.mongo.InternalSource;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
