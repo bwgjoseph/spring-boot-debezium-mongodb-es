@@ -22,6 +22,9 @@ public class Person {
     @Field(type = FieldType.Keyword)
     private String id;
 
+    @Field(type = FieldType.Keyword)
+    private String sourceId;
+
     @Field(type = FieldType.Text)
     private String name;
 
