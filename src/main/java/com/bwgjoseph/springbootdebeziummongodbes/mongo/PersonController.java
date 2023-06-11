@@ -2,6 +2,7 @@ package com.bwgjoseph.springbootdebeziummongodbes.mongo;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,11 +23,14 @@ public class PersonController {
     @PostMapping
     public Person create(@RequestBody PersonRequest personRequest) {
         LocalDateTime now = LocalDateTime.now();
+        InternalSource internalSource = InternalSource.builder().sourceType(SourceType.INTERNAL).internal("internal").remarks("internal remarks").obtainedAt(now).build();
+        ExternalSource externalSource = ExternalSource.builder().sourceType(SourceType.EXTERNAL).external("external").remarks("external remarks").obtainedAt(now).build();
 
         Person person = Person.builder()
                     .name(personRequest.name())
                     .description(personRequest.description())
                     .hashTags(personRequest.hashTags())
+                    .sources(List.of(internalSource, externalSource))
                     .createdAt(now)
                     .updatedAt(now)
                     .occurredAt(Instant.now())

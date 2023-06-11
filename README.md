@@ -356,3 +356,51 @@ Person(super=BaseRecord(id=648568d11b59841304250875, createdAt=2023-06-11T14:25:
 ```
 
 Notice that for `LocalDateTime`, it will automatically be shown as current (localdatetime) - `2023-06-11T14:25:21.711` but for `Instant`, it is defined as `UTC+0` using `2023-06-11T06:25:21.712Z` < notice the Z, and it's 06 instead of 14 >
+
+---
+
+Unable to Deserialize when have abstract class - `Source`
+
+`Source` comes with 2 subclass; `InternalSource` and `ExternalSource`
+
+An example of the data
+
+```log
+envelop Struct{after={"_id": {"$oid": "6485740d224921287a3875bb"},"name": "joseph","description": "hello world","hashTags": ["hello","world"],"createdAt": {"$date": 1686467597086},"updatedAt": {"$date": 1686467597086},"occurredAt": {"$date": 1686467597089},"sources": [{"internal": "internal","sourceType": "INTERNAL","obtainedAt": {"$date": 1686467597086},"remarks": "internal remarks","_class": "com.bwgjoseph.springbootdebeziummongodbes.mongo.InternalSource"},{"external": "external","sourceType": "EXTERNAL","obtainedAt": {"$date": 1686467597086},"remarks": "external remarks","_class": "com.bwgjoseph.springbootdebeziummongodbes.mongo.ExternalSource"}],"_class": "person"},source=Struct{version=2.1.2.Final,connector=mongodb,name=dbz,ts_ms=1686467599000,db=source,rs=esrs,collection=persons,ord=1},op=c,ts_ms=1686467599150}
+```
+
+Exception when trying to deserialize
+
+```log
+2023-06-11 15:13:19.657  INFO 25564 --- [pool-2-thread-1] c.b.s.debezium.StructWrapper             : Attempting to convert to mongo clazz class com.bwgjoseph.springbootdebeziummongodbes.mongo.Person
+com.fasterxml.jackson.databind.exc.InvalidDefinitionException: Cannot construct instance of `com.bwgjoseph.springbootdebeziummongodbes.mongo.Source` (no Creators, like default constructor, exist): abstract types either need to be mapped to concrete types, have custom deserializer, or contain additional type information
+ at [Source: (String)"{"_id": {"$oid": "6485740d224921287a3875bb"},"name": "joseph","description": "hello world","hashTags": ["hello","world"],"createdAt": {"$date": 1686467597086},"updatedAt": {"$date": 1686467597086},"occurredAt": {"$date": 1686467597089},"sources": [{"internal": "internal","sourceType": "INTERNAL","obtainedAt": {"$date": 1686467597086},"remarks": "internal remarks","_class": "com.bwgjoseph.springbootdebeziummongodbes.mongo.InternalSource"},{"external": "external","sourceType": "EXTERNAL","obtained"[truncated 156 chars]; line: 1, column: 249] (through reference chain: com.bwgjoseph.springbootdebeziummongodbes.mongo.Person$PersonBuilderImpl["sources"]->java.util.ArrayList[0])
+        at com.fasterxml.jackson.databind.exc.InvalidDefinitionException.from(InvalidDefinitionException.java:67)
+        at com.fasterxml.jackson.databind.DeserializationContext.reportBadDefinition(DeserializationContext.java:1904)
+```
+
+So we want to make sure that it works using the normal means first before moving on to see if we can use Mixin, etc to get it working
+
+In `Source` abstract class, add `@JsonTypeInfo, @JsonSubTypes` to tell Jackson on how to handle polymorphic deserialization
+
+```java
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "sourceType", visible = true)
+@JsonSubTypes({
+    @Type(value = InternalSource.class, name = "INTERNAL"),
+    @Type(value = ExternalSource.class, name = "EXTERNAL"),
+})
+public abstract class Source {
+  @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+  private LocalDateTime obtainedAt;
+}
+```
+
+And because we have `LocalDateTime` here, we need to add `@JsonDeserialize` too. And don't forget that we need to have `@Jacksonized` annotation on each subclass as well.
+
+With that, it will be able to deserialize correctly
+
+```log
+2023-06-11 15:36:56.435  INFO 8688 --- [ool-26-thread-1] c.b.s.debezium.StructWrapper             : Attempting to convert to mongo clazz class com.bwgjoseph.springbootdebeziummongodbes.mongo.Person
+2023-06-11 15:36:56.444  INFO 8688 --- [ool-26-thread-1] c.b.s.d.DebeziumSourceEventListenerV5    : mongo record Person(super=BaseRecord(id=64857997147cdd3661944ee3, createdAt=2023-06-11T15:36:55.016, updatedAt=2023-06-11T15:36:55.016, occurredAt=2023-06-11T07:36:55.018Z, sources=[InternalSource(super=Source(sourceType=INTERNAL, obtainedAt=2023-06-11T15:36:55.016, remarks=internal remarks), internal=internal), ExternalSource(super=Source(sourceType=EXTERNAL, obtainedAt=2023-06-11T15:36:55.016, remarks=external remarks), external=external)]), name=joseph, description=hello world, hashTags=[hello, world])
+```
+
