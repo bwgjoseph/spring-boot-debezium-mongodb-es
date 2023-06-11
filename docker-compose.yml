@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   mongo:
-    image: mongo:latest
+    image: mongo:6.0.6
     container_name: sbd-mongo
     ports:
       - "27017:27017"
@@ -15,9 +15,16 @@ services:
     restart: unless-stopped
     networks:
       - sbd_internal
+    # on first `docker compose up -d`, comment out entrypoint and healthcheck
+    # once started, uncomment, and run `docker compose up -d` again
+    # entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "esrs" ]
+    # healthcheck:
+    #   test: 'test $$(mongosh --eval "rs.initiate().ok || rs.status().ok" --quiet) -eq 1'
+    #   interval: 10s
+    #   start_period: 30s
 
   elasticsearch:
-    image: elasticsearch:7.17.9
+    image: elasticsearch:8.8.0
     container_name: sbd-elasticsearch
     ports:
       - "9200:9200"
@@ -38,7 +45,7 @@ services:
       - sbd_internal
 
   kibana:
-    image: kibana:7.17.9
+    image: kibana:8.8.0
     container_name: sbd-kibana
     ports:
       - "5601:5601"

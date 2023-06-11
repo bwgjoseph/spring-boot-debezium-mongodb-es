@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      uri: mongodb+srv://bwgjoseph:{MONGO_PASSWORD}@sb-debezium.1ewsyzd.mongodb.net/source
+      uri: mongodb://root:password@localhost:27017/source?directConnection=true&authSource=admin
 
 mongo:
   version: v5

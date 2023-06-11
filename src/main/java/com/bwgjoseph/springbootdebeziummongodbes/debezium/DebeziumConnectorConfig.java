@@ -16,19 +16,19 @@ public class DebeziumConnectorConfig {
 
         return Configuration.create()
                 // engine properties
-                .with("name", "sbd-mongodb")
+                .with("name", "sbd-mongodb-cdc")
                 .with("connector.class", "io.debezium.connector.mongodb.MongoDbConnector")
                 .with("offset.storage", "org.apache.kafka.connect.storage.FileOffsetBackingStore")
                 .with("offset.storage.file.filename", offsetStorageTempFile.getAbsolutePath())
                 .with("offset.flush.interval.ms", "60000")
                 // connector specific properties
                 // .with("mongodb.hosts", "sb-debezium.1ewsyzd.mongodb.net")
-                .with("mongodb.connection.string", "mongodb+srv://sb-debezium.1ewsyzd.mongodb.net")
-                .with("topic.prefix", "sbd-mongodb-connector")
-                .with("mongodb.user", "bwgjoseph")
-                .with("mongodb.password", "d8v2dYsu85i0QSRU")
+                .with("mongodb.connection.string", "mongodb://root:password@localhost:27017/source?directConnection=true&authSource=admin")
+                .with("topic.prefix", "dbz")
+                .with("mongodb.user", "root")
+                .with("mongodb.password", "password")
                 // .with("mongodb.authsource", "admin") // has default
-                .with("mongodb.ssl.enabled", "true") // default false
+                .with("mongodb.ssl.enabled", "false") // default false
                 // .with("mongodb.ssl.invalid.hostname.allowed", "false") // has default
                 .with("database.include.list", "source") // default empty
                 // .with("database.exclude.list", "") // has default
