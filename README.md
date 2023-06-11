@@ -493,3 +493,26 @@ objectMapper.registerModule(simpleModule);
 Once we register it, we can remove all the individual `@JsonDeserialize` declaration across the various `Mixins`. Unfortunately, I'm not sure if there's a good way for `ObjectIdDeserializer` because it's a `String` object, and if register as a global option, that would be too overwhelming. Unless I use `ObjectId` as the data type for `_id` within the `BaseRecord` class, if not, then using `@JsonDeserialize` is still the best option.
 
 Of course, do note that by registering it as the global deserialize, the drawback of it is that it does it for the object every single time unlike `@JsonDeserializer` where you can indicate when you want to "activate" it.
+
+---
+
+Now, we add in `PartialLocalDate`, and see if we can achieve easily deserialize via the previous methods that we have explored. For this, we gonna want to register the global deserializer as well.
+
+Without the custom deserializer, we will encounter similar error
+
+```log
+2023-06-11 17:08:46.977  INFO 27028 --- [pool-2-thread-1] c.b.s.debezium.StructWrapper             : Attempting to convert to mongo clazz class com.bwgjoseph.springbootdebeziummongodbes.mongo.Person
+com.fasterxml.jackson.databind.exc.MismatchedInputException: Cannot construct instance of `com.bwgjoseph.springbootdebeziummongodbes.partialdate.PartialLocalDate` (although at least one Creator exists): cannot deserialize from Object value (no delegate- or property-based Creator)
+ at [Source: (String)"{"_id": {"$oid": "64858f1e137292513a101382"},"name": "joseph","description": "hello world","hashTags": ["hello","world"],"dob": {"date": "2023-06-11","classifier": "LOCAL_DATE","year": 2023,"month": 6,"day": 11},"createdAt": {"$date": 1686474525883},"updatedAt": {"$date": 1686474525883},"occurredAt":
+{"$date": 1686474525901},"sources": [{"internal": "internal","sourceType": "INTERNAL","obtainedAt": {"$date": 1686474525883},"remarks": "internal remarks","_class": "source.internal"},{"external": ""[truncated 153 chars]; line: 1, column: 130] (through reference chain: com.bwgjoseph.springbootdebeziummongodbes.mongo.Person$PersonBuilderImpl["dob"])
+        at com.fasterxml.jackson.databind.exc.MismatchedInputException.from(MismatchedInputException.java:63)
+```
+
+So, let's create one, and then register it, and see if it works
+
+And viola! it does!
+
+```log
+2023-06-11 17:14:15.084  INFO 8876 --- [pool-2-thread-1] c.b.s.debezium.StructWrapper             : Attempting to convert to mongo clazz class com.bwgjoseph.springbootdebeziummongodbes.mongo.Person
+2023-06-11 17:14:15.118  INFO 8876 --- [pool-2-thread-1] c.b.s.d.DebeziumSourceEventListenerV5    : mongo record Person(super=BaseRecord(id=6485906645842b7e0b8899b2, createdAt=2023-06-11T17:14:14.081, updatedAt=2023-06-11T17:14:14.081, occurredAt=2023-06-11T09:14:14.087Z, sources=[InternalSource(super=Source(sourceType=INTERNAL, obtainedAt=2023-06-11T17:14:14.081, remarks=internal remarks), internal=internal), ExternalSource(super=Source(sourceType=EXTERNAL, obtainedAt=2023-06-11T17:14:14.081, remarks=external remarks), external=external)]), name=joseph, description=hello world, hashTags=[hello, world], dob=2023-06-11)
+```

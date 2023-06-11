@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bwgjoseph.springbootdebeziummongodbes.partialdate.PartialLocalDate;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,6 +32,7 @@ public class PersonController {
                     .name(personRequest.name())
                     .description(personRequest.description())
                     .hashTags(personRequest.hashTags())
+                    .dob(PartialLocalDate.now())
                     .sources(List.of(internalSource, externalSource))
                     .createdAt(now)
                     .updatedAt(now)

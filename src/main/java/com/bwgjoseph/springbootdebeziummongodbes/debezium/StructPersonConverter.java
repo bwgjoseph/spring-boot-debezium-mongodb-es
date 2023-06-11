@@ -9,10 +9,12 @@ import org.springframework.stereotype.Component;
 import com.bwgjoseph.springbootdebeziummongodbes.jackson.BaseRecordMixin;
 import com.bwgjoseph.springbootdebeziummongodbes.jackson.InstantDeserializer;
 import com.bwgjoseph.springbootdebeziummongodbes.jackson.LocalDateTimeDeserializer;
+import com.bwgjoseph.springbootdebeziummongodbes.jackson.PartialLocalDateDeserializer;
 import com.bwgjoseph.springbootdebeziummongodbes.jackson.SourceMixin;
 import com.bwgjoseph.springbootdebeziummongodbes.mongo.BaseRecord;
 import com.bwgjoseph.springbootdebeziummongodbes.mongo.Person;
 import com.bwgjoseph.springbootdebeziummongodbes.mongo.Source;
+import com.bwgjoseph.springbootdebeziummongodbes.partialdate.PartialLocalDate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -33,6 +35,7 @@ public class StructPersonConverter implements Converter<String, Person> {
             SimpleModule simpleModule = new SimpleModule();
             simpleModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
             simpleModule.addDeserializer(Instant.class, new InstantDeserializer());
+            simpleModule.addDeserializer(PartialLocalDate.class, new PartialLocalDateDeserializer());
             objectMapper.registerModule(simpleModule);
             return objectMapper.readValue(data, Person.class);
         } catch (JsonProcessingException e) {
