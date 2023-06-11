@@ -477,3 +477,19 @@ objectMapper.addMixIn(Source.class, SourceMixin.class);
 objectMapper.addMixIn(Source.SourceBuilder.class, SourceFieldMixin.class);
 ```
 
+---
+
+Next, I want to explore if we can simplify some deserialization rule by registering a global deserialization handler for certain data type like `LocalDateTime, Instant` rather than having to use `Mixin` and annotate one by one which is quite troublesome
+
+And that's rather straightforward. We just need to register it as a module and we are good to go!
+
+```java
+SimpleModule simpleModule = new SimpleModule();
+simpleModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
+simpleModule.addDeserializer(Instant.class, new InstantDeserializer());
+objectMapper.registerModule(simpleModule);
+```
+
+Once we register it, we can remove all the individual `@JsonDeserialize` declaration across the various `Mixins`. Unfortunately, I'm not sure if there's a good way for `ObjectIdDeserializer` because it's a `String` object, and if register as a global option, that would be too overwhelming. Unless I use `ObjectId` as the data type for `_id` within the `BaseRecord` class, if not, then using `@JsonDeserialize` is still the best option.
+
+Of course, do note that by registering it as the global deserialize, the drawback of it is that it does it for the object every single time unlike `@JsonDeserializer` where you can indicate when you want to "activate" it.
